@@ -19,7 +19,7 @@
             }
             div {
                 display:block;
-	            width:90%;
+	            widows: 100%;
 	            margin:auto;
             }
             ul {
@@ -29,8 +29,14 @@
         <form class="left" action="/new_post" method="get"><input id="Add_New_Post" type="submit" value="Add a new post!"></form>
         <br>
         <form class="left" action="/blog" method="get"><input id="View_All_Posts" type="submit" value="View All Posts"></form>
+        <br>
+        <form class="left" action="/signup" method="get"><input id="Signup" type="submit" value="Signup!"></form>
+        <br>
+        <form class="left" action="/login" method="get"><input id="login" type="submit" value="Login?"></form>
+        <br>
+        <form class="left" action="/logout" method="get"><input id="Logout" type="submit" value="Logout?"></form>
         <title>
-            <p class="center">{{title}}</p>
+            {{title}}
         </title>
     </head>
 <body>

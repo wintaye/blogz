@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>All Blog Entries</h1>
+    <h1 class="center">All Blog Entries</h1>
     <ul>
         {% for blog in all_blog_posts %}
             <li>
@@ -10,6 +10,7 @@
                 </h2>
                 <p class="center">{{ blog.body }}</p>
                 <p class="center">{{ blog.created }}</p>
+                <p class="center">Author: {{ blog.owner.username }}</p>
             </li>
         {% endfor %}
     </ul>
