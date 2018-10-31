@@ -2,7 +2,6 @@ from flask import Flask, request, redirect, render_template, flash, session
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 import jinja2
-from user_signup_formulas import user_is_valid
 import os
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -107,13 +106,15 @@ def new_entry():
         new_blog_title = request.form['title']
         new_blog_body = request.form['body']
         # owner_id = request.args.get('owner_id')
-        username = request.args.get('username')
+        #user = User.query.filter_by(username=session['username']).first()
+        id = request.args.get('id')
+        user = request.args.get('username')
         #new_blog_owner = User.query.filter_by(username=username).first()
         if not new_blog_title or not new_blog_body:
             flash("Please fill out all forms.")
             return render_template('new_post_form.html', title="Create a new blog post", new_blog_title=new_blog_title, new_blog_body=new_blog_body)
         else:
-            new_blog_post = Blog(new_blog_title, new_blog_body, username)
+            new_blog_post = Blog(new_blog_title, new_blog_body, user)
             db.session.add(new_blog_post)
             db.session.commit()
             url = "/blog?id=" + str(new_blog_post.id)
@@ -122,9 +123,49 @@ def new_entry():
         #if request is GET
         return render_template('new_post_form.html')
 
+
+
+########################
+def email_check(email):
+    email = str(email)
+    if "@" not in email or "." not in email:
+        return False
+    elif email.count('@') > 1 or email.count(".") > 1:
+        return False
+    elif " " in email:
+        return False
+    elif len(email) < 3 or len(email) > 20:
+        return False
+    else: 
+        return True
+
+def verify_passwords(password, verify_password):
+    if password != verify_password:
+        return False
+    else: 
+        return True
+
+def password_check(password):
+    password = str(password)
+    if " " in password:
+        return False
+    elif len(password) < 3 or len(password) > 20:
+        return False
+    else:
+        return True 
+
+def username_check(user, password, verify_password):
+    user = str(user)    
+    password = str(password)
+    verify_password = str(verify_password)
+    if len(user) < 1 or len(password) < 1 or len(verify_password) < 1:
+        return False
+    else: 
+        return True
+
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
-#     if request.method == 'POST':
+    if request.method == 'POST':
         print("INITIALIZER, NOTHING HAS HAPPENED YET")
         password = request.form['password']
         verify_password = request.form['verify_password']
@@ -145,7 +186,19 @@ def signup():
 
         else:
             print("MADE IT TO BEFORE USER_IS_VALID")
-            if user_is_valid(username, email, password, verify_password):
+            if not verify_passwords(password, verify_password):
+                verify_password_error = 'Your entered passwords do not match.'
+            
+            if not password_check(password):
+                password_error = 'Password error. Please check that your password is between 3-20 characters and contains no spaces.'
+
+            if not email_check(email):
+                email_error = 'Email error. Check that email address contains (1) @ symbol, (1) . and is between 3-20 characters long.'
+
+            if not username_check(username, password, verify_password):
+                blank_error = 'Make sure not to leave any mandatory fields blank.'
+
+            if not email_error and not password_error and not verify_password_error and not blank_error:
                 new_user = User(email, password, username)
                 db.session.add(new_user)
                 db.session.commit()
@@ -157,8 +210,8 @@ def signup():
                 print("LAST ELSE STATEMENT")
                 return render_template('signup.html', email_error=email_error, verify_password_error=verify_password_error, email=email, username=username, blank_error=blank_error, password_error=password_error)
 
-    # else: 
-    #     return render_template('signup.html')
+    else: 
+        return render_template('signup.html')
 
 # @app.route("/single_post")
 # def singlepost():

@@ -10,7 +10,7 @@
                 </h2>
                 <p class="center">{{ blog.body }}</p>
                 <p class="center">{{ blog.created }}</p>
-                <p class="center">Author: {{ blog.owner.username }}</p>
+                <p class="center">Author: <a href="/blog?id={{ blog.owner.username }}">{{ blog.owner.username }}</a></p>
             </li>
         {% endfor %}
     </ul>
