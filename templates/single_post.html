@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-    <div>
-            <h1 class="center">{{blog.title}}</h1>
-            <h4 class="center">by <a href='/blog?user={{blog.owner.id}}'>{{blog.owner.username}}</a></h4>
-            <p class="center">{{blog.body}}</p>
-            <h4 class="center">{{blog.created}}</h4>
-    </div>
+<ul>
+        <li>
+            <h3><p class="center"><a href='blog?id={{id}}'>{{blog_title}}</a></p></h3>
+            <p class="center">Written by: <a href='/blog?user={{user}}'>{{user}}</a></p>
+            <p class="center">{{body}}</p>
+            <h4 class="center">{{created}}</h4>
+        </li>
+</ul>  
 {% endblock %}
