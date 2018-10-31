@@ -1,7 +1,6 @@
 from flask import Flask, request, redirect, render_template, flash, session
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc
 import jinja2
 from user_signup_formulas import user_is_valid
 import os
@@ -125,7 +124,8 @@ def new_entry():
 
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
-    if request.method == 'POST':
+#     if request.method == 'POST':
+        print("INITIALIZER, NOTHING HAS HAPPENED YET")
         password = request.form['password']
         verify_password = request.form['verify_password']
         username = request.form['username']
@@ -136,43 +136,39 @@ def signup():
         verify_password_error = ''
         email_error = ''
         existing_user = User.query.filter_by(username=username).first()
+        print("AFTER EXISTING_USER")
 
         if existing_user:
             flash("Username is taken.")
+            PRINT("CAUGHT ON EXISTING USER")
             return redirect('/signup')
 
-        elif not user_is_valid(username, email, password, verify_password):
-            return render_template('signup.html', email_error=email_error, verify_password_error=verify_password_error, email=email, username=username, blank_error=blank_error, password_error=password_error)
-            
         else:
-            new_user = User(username, email, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            flash("Welcome, "+str(username)+"!")
-            return redirect('/new_post')
+            print("MADE IT TO BEFORE USER_IS_VALID")
+            if user_is_valid(username, email, password, verify_password):
+                new_user = User(email, password, username)
+                db.session.add(new_user)
+                db.session.commit()
+                session['username'] = username
+                flash("Welcome, "+str(username)+"!")
+                ("MADE IT TO THE END OF USER_IS_VALID")
+                return redirect('/new_post')
+            else:
+                print("LAST ELSE STATEMENT")
+                return render_template('signup.html', email_error=email_error, verify_password_error=verify_password_error, email=email, username=username, blank_error=blank_error, password_error=password_error)
 
-    else: 
-        return render_template('signup.html')
+    # else: 
+    #     return render_template('signup.html')
 
-# @app.route("/singleUser")
-# @app.route("/singleUser/<user>")
-# def singleUser():
-#     user_name_fetch = request.args.get('user')
-#     user = User.query.filter_by(username=user_name_fetch).first()
-#     owner_id = request.args.get('owner_id')
-#     blogs = Blog.query.filter_by(owner_id=owner_id)
-#     return render_template('single_user.html', user=user, blogs=blogs)
-
-@app.route("/single_post")
-def singlepost():
-    blogid = request.args.get('bid')
-    if blogid:
-        blog = Blog.query.get(blogid)
-        return render_template('single_post.html', blog=blog)
-    else: 
-        all_blog_posts = Blog.query.all()
-        return render_template('all_blog_posts.html', title="All Blog Entries", all_blog_posts=all_blog_posts)
+# @app.route("/single_post")
+# def singlepost():
+#     blogid = request.args.get('bid')
+#     if blogid:
+#         blog = Blog.query.get(blogid)
+#         return render_template('single_post.html', blog=blog)
+#     else: 
+#         all_blog_posts = Blog.query.all()
+#         return render_template('all_blog_posts.html', title="All Blog Entries", all_blog_posts=all_blog_posts)
 
 @app.route("/")
 def all_users():

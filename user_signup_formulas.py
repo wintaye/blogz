@@ -35,26 +35,18 @@ def username_check(user, password, verify_password):
     else: 
         return True
         
-def user_is_valid(user, password, verify_password, email):
-    # check = ''
-    # password_error = ''
-    # email_error = ''
-    # blank_error = ''
-    # password_error_2 = ''
-    # verify_password_error = ''
-    # email_error = ''
-    
+def user_is_valid(user, password, verify_password, email): 
     if not verify_check(password, verify_password):
-            verify_password_error = 'Your entered passwords do not match.'
+        verify_password_error = 'Your entered passwords do not match.'
 
     if not password_check(password):
-            password_error = 'Password error. Please check that your password is between 3-20 characters and contains no spaces.'
+        password_error = 'Password error. Please check that your password is between 3-20 characters and contains no spaces.'
 
     if not email_check(email):
-            email_error = 'Email error. Check that email address contains (1) @ symbol, (1) . and is between 3-20 characters long.'
+        email_error = 'Email error. Check that email address contains (1) @ symbol, (1) . and is between 3-20 characters long.'
 
     if not username_check(user, password, verify_password):
-            blank_error = 'Make sure you do not leave any mandatory fields blank.'
+        blank_error = 'Make sure you do not leave any mandatory fields blank.'
 
     if not email_error and not password_error and not verify_password_error and not blank_error:
         return True
