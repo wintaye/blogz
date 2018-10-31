@@ -1,9 +1,10 @@
 from flask import Flask, request, redirect, render_template, flash, session
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 import jinja2
-import os
 from user_signup_formulas import user_is_valid
+import os
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
@@ -76,7 +77,7 @@ def login():
     else:
         return render_template('login.html')
 
-@app.route('/blog', methods=['GET'])
+@app.route('/blog', methods=['GET', 'POST'])
 def display_blog_post():
     id = request.args.get('id')
     username = request.args.get('user')
@@ -93,7 +94,7 @@ def display_blog_post():
     elif username: 
         user = User.query.filter_by(username=username).first()
         user_blogs = Blog.query.filter_by(owner_id=user.id).all()
-        return render_template('display_posts.html', blogs=user_blogs, user=user)
+        return render_template('display_posts.html', blogs=user_blogs)
         
     else:
         blogs = Blog.query.all()
@@ -144,23 +145,24 @@ def signup():
             return render_template('signup.html', email_error=email_error, verify_password_error=verify_password_error, email=email, username=username, blank_error=blank_error, password_error=password_error)
             
         else:
-            new_user = User(username, password)
+            new_user = User(username, email, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
-            return redirect("/blog")
+            flash("Welcome, "+str(username)+"!")
+            return redirect('/new_post')
 
     else: 
         return render_template('signup.html')
 
-@app.route("/singleUser")
-@app.route("/singleUser/<user>")
-def singleUser():
-    user_name_fetch = request.args.get('user')
-    user = User.query.filter_by(username=user_name_fetch).first()
-    owner_id = request.args.get('owner_id')
-    blogs = Blog.query.filter_by(owner_id=owner_id)
-    return render_template('single_user.html', user=user, blogs=blogs)
+# @app.route("/singleUser")
+# @app.route("/singleUser/<user>")
+# def singleUser():
+#     user_name_fetch = request.args.get('user')
+#     user = User.query.filter_by(username=user_name_fetch).first()
+#     owner_id = request.args.get('owner_id')
+#     blogs = Blog.query.filter_by(owner_id=owner_id)
+#     return render_template('single_user.html', user=user, blogs=blogs)
 
 @app.route("/single_post")
 def singlepost():
