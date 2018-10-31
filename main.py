@@ -85,7 +85,8 @@ def display_blog_post():
     #     return render_template('single_post.html', title="New Blog Post", blogs=blogs)
     # else:  
         all_blog_posts = Blog.query.all()
-        return render_template('all_blog_posts.html', title="All Blog Entries", all_blog_posts=all_blog_posts)
+        user = request.args.get('user')
+        return render_template('all_blog_posts.html', title="All Blog Entries", all_blog_posts=all_blog_posts, user=user)
 
 @app.route("/new_post", methods=['GET', 'POST'])
 def new_entry():
@@ -94,7 +95,7 @@ def new_entry():
     if request.method == 'POST':
         new_blog_title = request.form['title']
         new_blog_body = request.form['body']
-        #owner_id = request.args.get('owner_id')
+        owner_id = request.args.get('owner_id')
         #username = session['username']
         #new_blog_owner = User.query.filter_by(username=username).first()
         if not new_blog_title or not new_blog_body:
