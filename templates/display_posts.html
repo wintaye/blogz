@@ -3,7 +3,7 @@
 <ul>
     {% for blog in blogs %}
         <li>
-            <h3><p class="center"></p><a href='blog?id={{blog.id}}'>{{blog.title}}</a></</h3>
+            <h3><p class="center"><a href='blog?id={{blog.id}}'>{{blog.title}}</a></p></h3>
             <p class="center">Written by: <a href='/blog?user={{blog.owner.username}}'>{{blog.owner.username}}</a></p>
             <p class="center">{{blog.body}}</p>
             <h4 class="center">{{blog.created}}</h4>

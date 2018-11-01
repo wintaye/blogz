@@ -78,19 +78,18 @@ def login():
 @app.route('/blog', methods=['GET', 'POST'])
 def display_blog_post():
     id = request.args.get('id')
-    username = request.args.get('user')
     if id:
         blog = Blog.query.filter_by(id=id).first()
         blog_title = blog.title
         body = blog.body
         created = blog.created
-        username = User.query.filter_by(username=username).first()
-        return render_template('single_post.html', title=username, body=body, created=created, user=username, blog_title=blog_title)
+        # username = User.query.filter_by(username=username).first()
+        return render_template('single_post.html', created=created, blog_title=blog_title, body=body, blog=blog)
     
-    
+    username = request.args.get('user')
     if username: 
         user = User.query.filter_by(username=username).first()
-        user_blogs = Blog.query.filter_by(owner_id=user.username).all()
+        user_blogs = Blog.query.filter_by(owner_id=user.id).all()
         return render_template('display_posts.html', blogs=user_blogs)
         
     else:
@@ -104,16 +103,15 @@ def new_entry():
     if request.method == 'POST':
         new_blog_title = request.form['title']
         new_blog_body = request.form['body']
-        owner_id = request.args.get('owner_id')
-        #owner = User.query.filter_by(username=session['username']).first()
-        #user = User.query.filter_by(username=session['username']).first()
+        #owner_id = request.args.get('owner_id')
+        user = User.query.filter_by(username=session['username']).first()
         #id = request.args.get('id')
         #new_blog_owner = User.query.filter_by(username=username).first()
         if not new_blog_title or not new_blog_body:
             flash("Please fill out all forms.")
             return render_template('new_post_form.html', title="Create a new blog post", new_blog_title=new_blog_title, new_blog_body=new_blog_body)
         else:
-            new_blog_post = Blog(new_blog_title, new_blog_body, owner_id)
+            new_blog_post = Blog(new_blog_title, new_blog_body, user.id)
             db.session.add(new_blog_post)
             db.session.commit()
             url = "/blog?id=" + str(new_blog_post.id)
