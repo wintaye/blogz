@@ -30,7 +30,7 @@
         <br>
         <form class="left" action="/blog" method="get"><input id="View_All_Posts" type="submit" value="View All Posts"></form>
         <br>
-        <form class="left" action="/signup" method="get"><input id="Signup" type="submit" value="Signup!"></form>
+        <form class="left" action="/signup" method="get"><input id="Signup" type="submit" value="Create Account"></form>
         <br>
         <form class="left" action="/login" method="get"><input id="login" type="submit" value="Login?"></form>
         <br>
@@ -41,6 +41,7 @@
     </head>
 <body>
     <main>
+            <br><br><br><br>
         <div>
             {% with messages = get_flashed_messages() %}
                 {% for message in messages %}

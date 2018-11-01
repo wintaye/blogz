@@ -68,7 +68,7 @@ def login():
         if user and user.password == password:
             session['username'] = username
             flash("Logged In!")
-            return redirect('/blog')
+            return redirect('/new_post')
         else:
             flash("Username not found or password incorrect :/")
             return render_template('login.html')
@@ -79,19 +79,18 @@ def login():
 def display_blog_post():
     id = request.args.get('id')
     username = request.args.get('user')
-
     if id:
         blog = Blog.query.filter_by(id=id).first()
         blog_title = blog.title
         body = blog.body
         created = blog.created
-        username = blog.owner.username
-        user = User.query.filter_by(username=username).first()
+        username = User.query.filter_by(username=username).first()
         return render_template('single_post.html', title=username, body=body, created=created, user=username, blog_title=blog_title)
     
-    elif username: 
+    
+    if username: 
         user = User.query.filter_by(username=username).first()
-        user_blogs = Blog.query.filter_by(owner_id=user.id).all()
+        user_blogs = Blog.query.filter_by(owner_id=user.username).all()
         return render_template('display_posts.html', blogs=user_blogs)
         
     else:
@@ -105,16 +104,16 @@ def new_entry():
     if request.method == 'POST':
         new_blog_title = request.form['title']
         new_blog_body = request.form['body']
-        # owner_id = request.args.get('owner_id')
+        owner_id = request.args.get('owner_id')
+        #owner = User.query.filter_by(username=session['username']).first()
         #user = User.query.filter_by(username=session['username']).first()
-        id = request.args.get('id')
-        user = request.args.get('username')
+        #id = request.args.get('id')
         #new_blog_owner = User.query.filter_by(username=username).first()
         if not new_blog_title or not new_blog_body:
             flash("Please fill out all forms.")
             return render_template('new_post_form.html', title="Create a new blog post", new_blog_title=new_blog_title, new_blog_body=new_blog_body)
         else:
-            new_blog_post = Blog(new_blog_title, new_blog_body, user)
+            new_blog_post = Blog(new_blog_title, new_blog_body, owner_id)
             db.session.add(new_blog_post)
             db.session.commit()
             url = "/blog?id=" + str(new_blog_post.id)
@@ -177,15 +176,12 @@ def signup():
         verify_password_error = ''
         email_error = ''
         existing_user = User.query.filter_by(username=username).first()
-        print("AFTER EXISTING_USER")
 
         if existing_user:
             flash("Username is taken.")
-            PRINT("CAUGHT ON EXISTING USER")
             return redirect('/signup')
 
         else:
-            print("MADE IT TO BEFORE USER_IS_VALID")
             if not verify_passwords(password, verify_password):
                 verify_password_error = 'Your entered passwords do not match.'
             
@@ -204,10 +200,8 @@ def signup():
                 db.session.commit()
                 session['username'] = username
                 flash("Welcome, "+str(username)+"!")
-                ("MADE IT TO THE END OF USER_IS_VALID")
                 return redirect('/new_post')
             else:
-                print("LAST ELSE STATEMENT")
                 return render_template('signup.html', email_error=email_error, verify_password_error=verify_password_error, email=email, username=username, blank_error=blank_error, password_error=password_error)
 
     else: 
